@@ -2,7 +2,7 @@ N-body Simulation
 =================
 
 In this task, you need to write a command-line MPI application that can perform
-the [N-body](https://en.wikipedia.org/wiki/N-body_simulation) simulation in
+the [N-body](http://www.scholarpedia.org/article/N-body_simulations_(gravitational)) simulation in
 parallel on a distributed-memory system.
 
 For this work, you will get a sample Unity project that you can use as a
