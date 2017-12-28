@@ -9,14 +9,18 @@ public class PlayerController : MonoBehaviour {
     public bool CreateDebugData =
         true;
 
-    private float galacticPlaneY =
+    [HideInInspector]
+    public float galacticPlaneY =
         0.0f;
 
     void Start () {
         galacticPlaneY =
             PlanetTemplate.transform.position.y;
 
-        if (CreateDebugData) {
+        GravitationalSimulator gravitationalSimulator =
+            FindObjectOfType<GravitationalSimulator> ();
+
+        if (CreateDebugData && !gravitationalSimulator.ReplaySimulationFromFile) {
             GenerateDebugData();
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -24,21 +25,18 @@ public class GravitationalSimulator : MonoBehaviour {
         100.0f;
     private float simulationSofteningLengthSquared;
 
-    public float SimulationTime =
+    public float SimulationTimePeriod =
         float.PositiveInfinity;
     public float SimulationDeltaTime =
         -1.0f; /* Set any negative value to use Unity's fixed update DeltaTime */
 
-    [Header("Simulation IO")]
+    [Header("Simulation Files")]
 
     public bool ReplaySimulationFromFile =
         false;
-    public string SimulationInputFilePath =
-        "";
-    public bool SaveSimulationToFile =
-        false;
-    public string SimulationOutputFilePath =
-        "";
+    public TextAsset SimulationFile;
+
+    // ---
 
     private List<PlanetController> planets =
         new List<PlanetController>();
@@ -48,14 +46,23 @@ public class GravitationalSimulator : MonoBehaviour {
     private long interactions = 
         0;
 
+    private Vector2[] simulationAccelerations =
+        null;
+    private int simulationAccelerationsCursor =
+        0;
+
     public void AddPlanet (PlanetController planet) {
         planets.Add (planet);
     }
 
     void Start () {
+        if (ReplaySimulationFromFile) {
+            LoadSimulationData ();
+        }
+
         simulationSofteningLengthSquared =
             SimulationSofteningLength * SimulationSofteningLength;
-        
+
         WireframeController[] wireframeControllers =
             FindObjectsOfType<WireframeController> ();
 
@@ -66,9 +73,31 @@ public class GravitationalSimulator : MonoBehaviour {
 
         quadtree =
             new QuadTreeNode (UniverseSize);
+
+        SetupSimulationTime ();
     }
 
     void FixedUpdate () {
+        if (SimulationTimePeriod != float.PositiveInfinity) {
+            if (SimulationTimePeriod <= 0.0f) {
+                foreach (PlanetController planet in planets) {
+                    planet.Acceleration =
+                        Vector2.zero;
+                    planet.GetComponent<Rigidbody> ().velocity =
+                        Vector3.zero;
+                }
+
+                return;
+            }
+            SimulationTimePeriod -= SimulationDeltaTime;
+        }
+
+        if (ReplaySimulationFromFile) {
+            ReplaySimulation ();
+
+            return;
+        }
+
         interactions =
             0;
 
@@ -79,7 +108,7 @@ public class GravitationalSimulator : MonoBehaviour {
         }
 
         if (EnableLog) {
-            Debug.Log(
+            Debug.Log (
                 "Barnes-Hut: " + PreferBarnesHut +
                 "; Planets: "  + planets.Count +
                 "; Interactions: " + interactions
@@ -94,6 +123,17 @@ public class GravitationalSimulator : MonoBehaviour {
     void OnDrawGizmos () {
         if (ShowQuadTree) {
             DrawDebugGizmos ();
+        }
+    }
+
+    private void ReplaySimulation () {
+        if (simulationAccelerationsCursor >= simulationAccelerations.Length) {
+            return;
+        }
+
+        foreach (PlanetController planet in planets) {
+            planet.Acceleration =
+                simulationAccelerations [simulationAccelerationsCursor++];
         }
     }
 
@@ -207,6 +247,126 @@ public class GravitationalSimulator : MonoBehaviour {
             new Vector3 (to.x,   0.0f, to.y),
             debugLineColor
         );
+    }
+
+    private void SetupSimulationTime () {
+        if (SimulationDeltaTime > 0.0f) {
+            Time.fixedDeltaTime =
+                SimulationDeltaTime;
+        }
+    }
+
+    private Transform buba;
+
+    private void LoadSimulationData () {
+        foreach (PlanetController planet in planets) {
+            Destroy (planet.gameObject);
+        }
+        planets.Clear ();
+
+        try {
+            string[] lines = SimulationFile.text.Trim ().Split (
+                new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries
+            );
+
+            int cursor =
+                0;
+            int planetCount =
+                int.Parse (lines [cursor++]);
+            SimulationTimePeriod =
+                float.Parse (lines [cursor++]);
+            SimulationDeltaTime  =
+                float.Parse (lines [cursor++]);
+
+            int iterations =
+                (int) (SimulationTimePeriod / SimulationDeltaTime);
+            simulationAccelerations =
+                new Vector2 [iterations * planetCount * 2];
+
+            PlayerController controller =
+                FindObjectOfType<PlayerController> ();
+            PlanetController template =
+                controller.PlanetTemplate;
+
+            for (int i = 0; i < planetCount; ++i) {
+                string[] components =
+                    lines [cursor++].Trim ().Split (null);
+
+                float x =
+                    float.Parse (components [0]);
+                float y =
+                    float.Parse (components [1]);
+
+                PlanetController planet =
+                    Instantiate (
+                        template,
+                        new Vector3 (
+                            x,
+                            controller.galacticPlaneY,
+                            y
+                        ),
+                        Quaternion.identity
+                    );
+
+                components =
+                    lines [cursor++].Trim ().Split (null);
+
+                float ax =
+                    float.Parse (components [0]);
+                float ay =
+                    float.Parse (components [1]);
+
+                planet.Acceleration =
+                    new Vector2 (
+                        ax, ay
+                    );
+
+                components =
+                    lines [cursor++].Trim ().Split (null);
+
+                float vx =
+                    float.Parse (components [0]);
+                float vy =
+                    float.Parse (components [1]);
+
+                planet.GetComponent<Rigidbody> ().velocity =
+                    new Vector3 (
+                        vx,
+                        0.0f,
+                        vy
+                    );
+
+                float initialMass =
+                    planet.Mass;
+
+                float mass =
+                    float.Parse(lines [cursor++]);
+                planet.Mass =
+                    mass;
+
+                float scale =
+                    (planet.Mass / (initialMass * 1.5f)) + 0.1f;
+                planet.transform.localScale =
+                    new Vector3 (scale, scale, scale);
+
+                AddPlanet(planet);
+            }
+
+            for (int i = 0; cursor < lines.Length; ++i) {
+                string[] components =
+                    lines [cursor++].Trim ().Split (null);
+
+                float ax =
+                    float.Parse (components [0]);
+                float ay =
+                    float.Parse (components [1]);
+
+                simulationAccelerations[i] =
+                    new Vector2 (ax, ay);
+            }
+        } catch(Exception exception) {
+            Debug.Log ("Failed to load simulation data: " + exception.Message);
+        }
     }
 }
 

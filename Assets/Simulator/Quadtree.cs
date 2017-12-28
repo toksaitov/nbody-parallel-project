@@ -3,8 +3,8 @@
 using UnityEngine;
 
 class QuadTreeNode : IBody {
-    public delegate bool Visitor(QuadTreeNode node);
-    public delegate Vector2 ForceCalculator(IBody firstBody, IBody secondBody);
+    public delegate bool Visitor (QuadTreeNode node);
+    public delegate Vector2 ForceCalculator (IBody firstBody, IBody secondBody);
 
     private const int DefaultCapacity =
         1;
