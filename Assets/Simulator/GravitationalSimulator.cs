@@ -256,8 +256,6 @@ public class GravitationalSimulator : MonoBehaviour {
         }
     }
 
-    private Transform buba;
-
     private void LoadSimulationData () {
         foreach (PlanetController planet in planets) {
             Destroy (planet.gameObject);
