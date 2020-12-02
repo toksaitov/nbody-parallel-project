@@ -1,6 +1,8 @@
 N-body Simulation
 =================
 
+[![Results](https://i.imgur.com/AWRaQH4.png)](https://drive.google.com/open?id=1LLFR2NcRhT2R43SCoZ69322wU0EMG35S)
+
 In this task, you need to write a command-line MPI application that can perform
 the [N-body](http://www.scholarpedia.org/article/N-body_simulations_(gravitational)) simulation in
 parallel on a distributed-memory system.
@@ -68,15 +70,28 @@ period of 1.0 and delta time of 0.1.
 0.847883 0.041454
 ```
 
-## Option #1
+You can also find the starter code with a serial implementation in C that you
+MUST use [here](https://github.com/toksaitov/nbody-starter);
+
+## Tasks
 
 Write a program that performs the brute-force O(N^2) simulation outlined in the
-method SimulateWithBruteforce in GravitationalSimulator.cs. You can get the
-maximum grade just by doing this option.
+method `SimulateWithBruteforce` in `GravitationalSimulator.cs` in a distributed
+way by using MPI. Use the [starter](https://github.com/toksaitov/nbody-starter)
+code and write your solution in the `nbody-mpi.c` file. Test your solution on
+the `sys1` and `sys2` course machines. Ensure that your distributed system runs
+all the servers and on all the cores of their CPUs. Consult the course video
+recordings about the information on how to run your solution on all machines at
+the same time.
 
-## Option #2
+## What to Submit
 
-For extra points, try to parallelize the Barnes-Hut approach outlined in the
-method SimulateWithBarnesHut in GravitationalSimulator.cs. You can only do this
-option to get the full grade and extra points.
+1. In your private course repository that was given to you by the instructor
+   during the lecture, create the path `project-2/`.
+2. Put the `nbody-mpi.c` file into that directory.
+3. Commit and push your repository through Git. Submit the last commit ID to
+   Canvas before the deadline.
 
+## Deadline
+
+Check Canvas for information about the deadline for the first part.
