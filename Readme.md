@@ -113,6 +113,7 @@ Check Canvas for information about the deadline for the first part.
 
 * [MPI Tutorial](https://mpitutorial.com/tutorials/running-an-mpi-cluster-within-a-lan)
 * [MPI Sample Programs](https://computing.llnl.gov/tutorials/mpi/exercise.html)
+* [MPICH Man Pages](https://www.mpich.org/static/docs/v3.1)
 
 ## Books
 
