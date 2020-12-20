@@ -95,3 +95,26 @@ the same time.
 ## Deadline
 
 Check Canvas for information about the deadline for the first part.
+
+## Documentation
+
+    man make
+    man gcc
+    man mpicc
+
+## Links
+
+### C, GDB, Radare2
+
+* [Beej's Guide to C Programming](https://beej.us/guide/bgc)
+* [GDB Quick Reference](http://users.ece.utexas.edu/~adnan/gdb-refcard.pdf)
+
+### MPI
+
+* [MPI Tutorial](https://mpitutorial.com/tutorials/running-an-mpi-cluster-within-a-lan)
+* [MPI Sample Programs](https://computing.llnl.gov/tutorials/mpi/exercise.html)
+
+## Books
+
+* C Programming: A Modern Approach, 2nd Edition by K. N. King
+* Assembly Language for x86 Processors, 7th Edition by Kip R. Irvine
