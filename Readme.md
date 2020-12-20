@@ -104,7 +104,7 @@ Check Canvas for information about the deadline for the first part.
 
 ## Links
 
-### C, GDB, Radare2
+### C, GDB
 
 * [Beej's Guide to C Programming](https://beej.us/guide/bgc)
 * [GDB Quick Reference](http://users.ece.utexas.edu/~adnan/gdb-refcard.pdf)
@@ -118,4 +118,3 @@ Check Canvas for information about the deadline for the first part.
 ## Books
 
 * C Programming: A Modern Approach, 2nd Edition by K. N. King
-* Assembly Language for x86 Processors, 7th Edition by Kip R. Irvine
