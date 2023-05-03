@@ -50,12 +50,45 @@ You can see the whole process of using all the programs in the video below. The 
 
 ## Recommendations
 
-1. Try understanding the serial algorithms first in `nbody.c` to figure out the best part of the code to compute in a parallel and distributed way.
-2. A simple solution with point-to-point MPI functions such as `MPI_Send` and `MPI_Recv` may be a good start, but to get the best performance you will have to consider using some (not all) collective communication functions from the following list:
+* Try understanding the serial algorithms first in `nbody.c` to figure out the best part of the code to compute in a parallel and distributed way.
+* A simple solution with point-to-point MPI functions such as `MPI_Send` and `MPI_Recv` may be a good start, but to get the best performance you will have to consider using some (not all) collective communication functions from the following list:
 
     * `MPI_Bcast`
     * `MPI_Scatter`, `MPI_Gather`, `MPI_Allgather`,
     * `MPI_Reduce`, `MPI_Allreduce`
+
+* You can use the following code to define a custom MPI date type for the `body_t` struct:
+
+```c
+static MPI_Datatype create_body_t_mpi_type()                                     
+{                                                                                
+    static const int count = 7;                                                  
+    const int block_lengths[] = {                                                
+        1, 1,                                                                    
+        1, 1,                                                                    
+        1, 1,                                                                    
+        1                                                                        
+    };                                                                           
+    MPI_Aint offsets[] = {                                                       
+        offsetof(body_t, x),  offsetof(body_t, y),                               
+        offsetof(body_t, ax), offsetof(body_t, ay),                              
+        offsetof(body_t, vx), offsetof(body_t, vy),                              
+        offsetof(body_t, mass)                                                   
+    };                                                                           
+    const MPI_Datatype types[] = {                                               
+        MPI_FLOAT, MPI_FLOAT,                                                    
+        MPI_FLOAT, MPI_FLOAT,                                                    
+        MPI_FLOAT, MPI_FLOAT,                                                    
+        MPI_FLOAT                                                                
+    };                                                                           
+                                                                                 
+    MPI_Datatype type;                                                           
+    MPI_Type_create_struct(count, block_lengths, offsets, types, &type);         
+    MPI_Type_commit(&type);                                                      
+                                                                                 
+    return type;                                                                 
+}
+```
 
 ## What to Submit
 
