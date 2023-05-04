@@ -102,6 +102,8 @@ MPI_Datatype mpi_body_t = create_body_t_mpi_type();
 MPI_Type_free(&mpi_body_t);
 ```
 
+* To reuse an array for sending and receiving data with `MPI_Allgather`, you must use `MPI_IN_PLACE` constant as a `sendbuf` as outlined [here](https://www.open-mpi.org/doc/v3.0/man3/MPI_Allgather.3.php).
+
 ## What to Submit
 
 1. In your private course repository that was given to you by the instructor during the lecture, create the path `project-4/`.
