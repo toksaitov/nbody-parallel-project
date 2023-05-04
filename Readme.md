@@ -26,18 +26,18 @@ You can see the whole process of using all the programs in the video below. The 
 11. Start the replay by clicking on the Play button in Unity. Enjoy watching the planetary bodies forming stable orbits around each other eventually after the big explosive start (not bang in our case).
 12. Go back to the `auca.space` server and start working on the `nbody-mpi.c` file. Use MPICH library and its Collective Communication functions to make N-body computations distributed.
 13. Compile your `nbody-mpi.c` code with `make`.
-14. Test your code on one computer first with `time mpiexec -n 64 ./nbody-mpi 100 0.01 100 10000 100 100 > ParallelSimulation.txt`.
+14. Test your code on one computer first with `time mpiexec -n 10 ./nbody-mpi 100 0.01 100 10000 100 100 > ParallelSimulation.txt`.
 15. Compare the output files with `vimdiff *.txt`. The simulation files must be the same.
 16. Create the `machinefile` with the following content
 
     ```
-    auca:64
-    auca-peer:32
+    auca:16
+    auca-peer:8
     ```
 
-17. Test your code on two computers with `time mpiexec -f machinefile -n 64 ./nbody-mpi 100 0.01 100 10000 100 100 > ParallelSimulation.txt`. Ensure the simulation files are still the same.
-18. Ensure that `time` measurements improve from `nbody` to `nbody-mpi` on one and finally two computers on average after several runs.
-19. Copy the `ParallelSimulation.txt` into the `SimulationData` of the Unity project. Rerun the visualization. Ensure it still works the same way.
+17. Test your code on two computers with `time mpiexec -f machinefile -n 20 ./nbody-mpi 100 0.01 100 10000 100 100 > ParallelSimulation.txt`. Ensure the simulation files are still the same.
+18. Copy the `ParallelSimulation.txt` into the `SimulationData` of the Unity project. Rerun the visualization. Ensure it still works the same way.
+19. Experiment with the processor and body count to find out where it makes sense to use your MPI solution on one or two machines.
 
 ## Rules
 
@@ -45,7 +45,7 @@ You can see the whole process of using all the programs in the video below. The 
 * Do NOT procrastinate and leave the work to the very last moment. If the servers are overloaded close to the deadline, you will not be able to get good measurements. We will not give any extensions for that reason.
 * Do NOT change the output format, or the Unity visualization will not work.
 * Use the provided `Makefile` to compile the code and nothing else.
-* Do NOT change the core N-body simulation algorithm. It MUST stay the brute-force [direct N-Body algorithm](http://www.scholarpedia.org/article/N-body_simulations_(gravitational)#Direct_methods). It is known for its high accuracy, but its quadratic complexity makes it unusable for any celestial system with more than ~20000 bodies. You can check the Unity project's code if you are interested in approximated but more scalable $O(N\log(N))$ solutions. It contains an implementation of the Barnes & Hut Tree Code method. You can check it by disabling replays in the `Gravitational Simulator (Script)` under the Inspector panel. You can even compare its speed on your computer to the direct method by experimenting with other checkboxes. Remember to return everything to its original state before testing your simulation files.
+* Do NOT change the core N-body simulation algorithm. It MUST stay the brute-force [direct N-Body algorithm](http://www.scholarpedia.org/article/N-body_simulations_(gravitational)#Direct_methods). It is known for its high accuracy, but its quadratic complexity makes it unusable for any celestial system with more than ~20000 bodies on a single core. You can check the Unity project's code if you are interested in approximated but more scalable $O(N\log(N))$ solutions. It contains an implementation of the Barnes & Hut Tree Code method. You can check it by disabling replays in the `Gravitational Simulator (Script)` under the Inspector panel. You can even compare its speed on your computer to the direct method by experimenting with other checkboxes. Remember to return everything to its original state before testing your simulation files.
 * Do NOT use assembly tricks, intrinsics, or multithreading APIs to boost the speed of your code. You can only use MPICH functions to speed up the `nbody-mpi.c` code.
 
 ## Recommendations
@@ -60,34 +60,46 @@ You can see the whole process of using all the programs in the video below. The 
 * You can use the following code to define a custom MPI date type for the `body_t` struct:
 
 ```c
-static MPI_Datatype create_body_t_mpi_type()                                     
-{                                                                                
-    static const int count = 7;                                                  
-    const int block_lengths[] = {                                                
-        1, 1,                                                                    
-        1, 1,                                                                    
-        1, 1,                                                                    
-        1                                                                        
-    };                                                                           
-    MPI_Aint offsets[] = {                                                       
-        offsetof(body_t, x),  offsetof(body_t, y),                               
-        offsetof(body_t, ax), offsetof(body_t, ay),                              
-        offsetof(body_t, vx), offsetof(body_t, vy),                              
-        offsetof(body_t, mass)                                                   
-    };                                                                           
-    const MPI_Datatype types[] = {                                               
-        MPI_FLOAT, MPI_FLOAT,                                                    
-        MPI_FLOAT, MPI_FLOAT,                                                    
-        MPI_FLOAT, MPI_FLOAT,                                                    
-        MPI_FLOAT                                                                
-    };                                                                           
-                                                                                 
-    MPI_Datatype type;                                                           
-    MPI_Type_create_struct(count, block_lengths, offsets, types, &type);         
-    MPI_Type_commit(&type);                                                      
-                                                                                 
-    return type;                                                                 
+static MPI_Datatype create_body_t_mpi_type()
+{
+    static const int count = 7;
+    const int block_lengths[] = {
+        1, 1,
+        1, 1,
+        1, 1,
+        1
+    };
+    MPI_Aint offsets[] = {
+        offsetof(body_t, x),  offsetof(body_t, y),
+        offsetof(body_t, ax), offsetof(body_t, ay),
+        offsetof(body_t, vx), offsetof(body_t, vy),
+        offsetof(body_t, mass)
+    };
+    const MPI_Datatype types[] = {
+        MPI_FLOAT, MPI_FLOAT,
+        MPI_FLOAT, MPI_FLOAT,
+        MPI_FLOAT, MPI_FLOAT,
+        MPI_FLOAT
+    };
+
+    MPI_Datatype type;
+    MPI_Type_create_struct(count, block_lengths, offsets, types, &type);
+    MPI_Type_commit(&type);
+
+    return type;
 }
+```
+
+* You can use the function in the following way to create your type:
+
+```c
+MPI_Datatype mpi_body_t = create_body_t_mpi_type();
+```
+
+* Don't forget to deallocate the created type before `MPI_Finalyze()`.
+
+```c
+MPI_Type_free(&mpi_body_t);
 ```
 
 ## What to Submit
