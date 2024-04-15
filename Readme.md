@@ -110,9 +110,9 @@ Check Moodle for information about the deadlines.
 
 ## Documentation
 
-man gcc
-man mpicc
-man mpirun
+    man gcc
+    man mpicc
+    man mpirun
 
 ## Links
 
