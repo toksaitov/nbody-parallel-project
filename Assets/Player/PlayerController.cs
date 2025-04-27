@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour {
                     Quaternion.identity
                 );
 
-            planet.GetComponent<Rigidbody> ().velocity =
+            planet.GetComponent<Rigidbody> ().linearVelocity =
                 new Vector3 (
                     Mathf.Cos (angle),
                     0.0f,

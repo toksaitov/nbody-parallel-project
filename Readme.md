@@ -13,35 +13,26 @@ You can view the entire process of utilizing all the programs in the video below
 
 ## Tasks
 
-1. Upload or clone the `nbody.c` and `nbody-mpi.c` source files to our course server `auca.space` from [this repository](https://github.com/toksaitov/nbody-starter). You must measure performance on `auca.space` connected to `peer.auca.space`, not on your computer.
-2. Ensure that SSH clients on your computer and both the `auca.space` and `peer.auca.space` servers are correctly configured to allow password-less connections between your accounts on these server machines. Consult the lab videos for more information.
-3. Compile `nbody.c` and its parallel version `nbody-mpi.c` by running `make`.
-4. Execute the serial program with the command `time ./nbody 100 0.01 128 10000 100 100 > SerialSimulation.txt`.
-5. Use `scp` to copy the generated `SerialSimulation.txt` file to your computer.
-6. Clone the visualization Unity project from the repository mentioned in this Readme file. Then, open it in Unity Editor 2022.
-7. Open the `Main.unity` scene file from the Project panel and the `Assets` directory.
-8. Select the `Simulator` object in the Hierarchy panel.
-9. In the Inspector panel, under the `Gravitational Simulator (Script)`, ensure that the `Replay Simulation from File` option is checked.
-10. In the `Simulation File` field, select the file you downloaded in Step 5. You may need to move the file into the `SimulationData` directory of the Unity project first to be able to select it.
-11. Start the replay by clicking on the Play button in Unity. Enjoy watching the planetary bodies form stable orbits around each other after a big explosive start (not a bang in our case).
-12. Return to the `auca.space` server and start modifying the `nbody-mpi.c` file. Use the Open MPI library and its Collective Communication functions to distribute N-body computations.
-13. Compile your `nbody-mpi.c` code with `make`.
-14. First, test your code on one computer with `time mpirun -np 16 ./nbody-mpi 100 0.01 128 10000 100 100 > ParallelSimulation.txt`.
-15. Compare the output files with `vimdiff *.txt`. The simulation files should be identical.
-16. Create a file named `hostfile` with the following content
-
-    ```
-    auca slots=16
-    auca-peer slots=16
-    ```
-
-17. Test your code on two computers using the command `time mpirun -hostfile hostfile -np 32 ./nbody-mpi 100 0.01 128 10000 100 100 > ParallelSimulation.txt`. Ensure that the simulation output files remain identical.
-18. Copy `ParallelSimulation.txt` into the `SimulationData` folder of the Unity project. Rerun the visualization to verify that it functions as expected.
-19. Experiment with varying the number of processors and bodies to determine when it is most effective to use your MPI solution on one or two machines.
+1. Upload or clone the `nbody.c` and `nbody-mpi.c` source files to our course server `auca.space` from [this repository](https://github.com/toksaitov/nbody-starter). You must measure performance on `auca.space`, not on your computer.
+2. Compile `nbody.c` and its parallel version `nbody-mpi.c` by running `make`.
+3. Execute the serial program with the command `time ./nbody 100 0.01 128 10000 100 100 > SerialSimulation.txt`.
+4. Use `scp` to copy the generated `SerialSimulation.txt` file to your computer.
+5. Clone the visualization Unity project from the repository mentioned in this Readme file. Then, open it in Unity Editor 6.
+6. Open the `Main.unity` scene file from the Project panel and the `Assets` directory.
+7. Select the `Simulator` object in the Hierarchy panel.
+8. In the Inspector panel, under the `Gravitational Simulator (Script)`, ensure that the `Replay Simulation from File` option is checked.
+9. In the `Simulation File` field, select the file you downloaded in Step 5. You may need to move the file into the `SimulationData` directory of the Unity project first to be able to select it.
+10. Start the replay by clicking on the Play button in Unity. Enjoy watching the planetary bodies form stable orbits around each other after a big explosive start (not a bang in our case).
+11. Return to the `auca.space` server and start modifying the `nbody-mpi.c` file. Use the Open MPI library and its Collective Communication functions to distribute N-body computations.
+12. Compile your `nbody-mpi.c` code with `make`.
+13. Test your code with `time mpirun -np 16 ./nbody-mpi 100 0.01 128 10000 100 100 > ParallelSimulation.txt`.
+14. Compare the output files with `vimdiff *.txt`. The simulation files should be identical.
+15. Copy `ParallelSimulation.txt` into the `SimulationData` folder of the Unity project. Rerun the visualization to verify that it functions as expected.
+16. Experiment with varying the number of processors and bodies to determine when it is most effective to use your MPI solution.
 
 ## Rules
 
-* Do NOT profile code anywhere except on our server at `auca.space` connected to `peer.auca.space`.
+* Do NOT profile code anywhere except on our server at `auca.space`.
 * Avoid procrastination and completing work at the last moment. If the servers become overloaded close to the deadline, obtaining accurate measurements will be difficult. Extensions will not be granted for this reason.
 * Do NOT alter the output format, as it will render the Unity visualization non-functional.
 * Utilize the provided `Makefile` exclusively for compiling the code.
@@ -60,7 +51,7 @@ You can view the entire process of utilizing all the programs in the video below
 * You can use the following code to define a custom MPI date type for the `body_t` struct:
 
 ```c
-static MPI_Datatype create_body_t_mpi_type()
+static MPI_Datatype create_body_t_mpi_type(void)
 {
     static const int count = 7;
     const int block_lengths[] = {

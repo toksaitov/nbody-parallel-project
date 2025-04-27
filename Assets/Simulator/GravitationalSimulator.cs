@@ -83,7 +83,7 @@ public class GravitationalSimulator : MonoBehaviour {
                 foreach (PlanetController planet in planets) {
                     planet.Acceleration =
                         Vector2.zero;
-                    planet.GetComponent<Rigidbody> ().velocity =
+                    planet.GetComponent<Rigidbody> ().linearVelocity =
                         Vector3.zero;
                 }
 
@@ -327,7 +327,7 @@ public class GravitationalSimulator : MonoBehaviour {
                 float vy =
                     float.Parse (components [1]);
 
-                planet.GetComponent<Rigidbody> ().velocity =
+                planet.GetComponent<Rigidbody> ().linearVelocity =
                     new Vector3 (
                         vx,
                         0.0f,
