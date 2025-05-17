@@ -95,6 +95,16 @@ MPI_Type_free(&mpi_body_t);
 
 * To reuse an array for sending and receiving data with `MPI_Allgather`, you must use the `MPI_IN_PLACE` constant as a `sendbuf`, as outlined [here](https://www.open-mpi.org/doc/v3.0/man3/MPI_Allgather.3.php). This approach is particularly useful when you want to optimize memory usage by avoiding additional buffer allocation.
 
+## Bonus Points
+
+You may create a version of the optimized program that utilizes CUDA and NVIDIA GPUs instead of MPI to speed up the calculations. Our Software Engineering lab is equipped with NVIDIA GPUs, the latest version of CUDA, and the most recent version of Visual Studio with CUDA integration. You can use those computers to develop, test, and debug your code if you do not have access to NVIDIA hardware.
+
+To be eligible for up to 5 bonus points, you must schedule an appointment with the instructor, demonstrate your CUDA solution, and be prepared to answer questions about it. Please do not submit any files containing CUDA solutions to this repository.
+
+## What to Submit
+
+Commit and push your changes to the private repository provided by your instructor. Submit the URL of your last commit to Moodle before the deadline.
+
 ## Deadline
 
 Check Moodle for information about the deadlines.
