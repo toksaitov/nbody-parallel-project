@@ -1,7 +1,7 @@
 Accelerating an N-body Simulation
 =================================
 
-![N-body Simulation](https://i.imgur.com/P3eAqMW.png)
+![N-body Simulation](https://raw.githubusercontent.com/rachmiroff/images/refs/heads/main/auca/com-392/spring-2026/nbody-project/nbody.png)
 
 The primary goal of this project is to optimize a C program that performs direct [N-body simulation](http://www.scholarpedia.org/article/N-body_simulations_(gravitational)) on a sample dataset of a small planetary system. The optimization should be achieved by distributing computation not only across the cores of a single machine but also across multiple computers in a cluster connected via a high-speed local network. To facilitate writing distributed code, you must utilize a library that implements the [MPI standard](https://www.mcs.anl.gov/research/projects/mpi), specifically, the Open MPI [library](https://www.open-mpi.org).
 
@@ -9,7 +9,7 @@ The project comprises two programs. The first is a serial C program that you are
 
 You can view the entire process of utilizing all the programs in the video below. The video also showcases the distributed version developed by your instructor, who opts for the MPICH library over Open MPI. Consequently, the instructor uses `mpiexec` instead of `mpirun`, with a few different flags (`-n` instead of `-np`, and `-f` instead of `-hostfile`). Additionally, the instructor simulates 100 bodies instead of 128. Despite these differences, the workflow remains largely the same.
 
-[![Results](https://i.imgur.com/AWRaQH4.png)](https://drive.google.com/open?id=1LLFR2NcRhT2R43SCoZ69322wU0EMG35S)
+[![Results](https://raw.githubusercontent.com/rachmiroff/images/refs/heads/main/auca/com-392/spring-2026/nbody-project/simulation.png)](https://drive.google.com/open?id=1LLFR2NcRhT2R43SCoZ69322wU0EMG35S)
 
 ## Tasks
 
@@ -40,6 +40,8 @@ You can view the entire process of utilizing all the programs in the video below
 * Refrain from using assembly tricks, intrinsics, or multithreading APIs to enhance your code's performance. The use of Open MPI functions is permitted solely for accelerating the `nbody-mpi.c` code.
 
 ## Recommendations
+
+We recommend not using AI systems to optimize your code, but we do NOT prohibit their use. Instead, we suggest using them as tutors to assist with the C programming language or to help strategize your optimization efforts.
 
 * Try understanding the serial algorithms first in `nbody.c` to identify the most suitable parts of the code for parallel and distributed computation.
 * A simple solution with point-to-point MPI functions such as `MPI_Send` and `MPI_Recv` may be a good start. However, to achieve the best performance, consider using some collective communication functions from the following list (not all of them may be necessary):
@@ -103,7 +105,7 @@ To be eligible for up to 5 bonus points, you must schedule an appointment with t
 
 ## What to Submit
 
-Commit and push your changes to the private repository provided by your instructor. Submit the URL of your last commit to Moodle before the deadline.
+Commit and push your changes to the private GitHub repository provided by your instructor. Before the deadline, submit the URL of your latest commit to Moodle. The URL MUST include the commit hash.
 
 ## Deadline
 
@@ -120,7 +122,7 @@ Check Moodle for information about the deadlines.
 ### C, GDB
 
 * [Beej's Guide to C Programming](https://beej.us/guide/bgc)
-* [GDB Quick Reference](http://users.ece.utexas.edu/~adnan/gdb-refcard.pdf)
+* [Beej's Quick Guide to GDB](https://beej.us/guide/bggdb)
 
 ### MPI
 
